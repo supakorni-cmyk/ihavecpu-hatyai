@@ -409,7 +409,7 @@ export default function AdsBookingPage() {
           {/* --- Interactive Google Maps Embed --- */}
           <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-2 h-full min-h-[350px] shadow-lg overflow-hidden flex">
             <iframe 
-              src="https://maps.google.com/maps?q=13.80975,100.65639&hl=en&z=15&output=embed" 
+              src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3923.7355606227507!2d100.499122!3d7.029523999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zN8KwMDEnNDYuMyJOIDEwMMKwMjknNTYuOCJF!5e1!3m2!1sen!2sth!4v1795143952164!5m2!1sen!2sth" 
               width="100%" 
               height="100%" 
               style={{ border: 0, borderRadius: '0.75rem' }} 
