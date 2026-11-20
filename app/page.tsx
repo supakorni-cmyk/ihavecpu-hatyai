@@ -22,16 +22,17 @@ const GALLERY_ITEMS = [
 ];
 
 const ZONE_LAYOUT_IMAGES: Record<string, string[]> = {
+  exteriorLogo: [
+    '/RENDER/VIEW/GALLERY/1.png', '/RENDER/VIEW/GALLERY/3.png'
+  ],
   interiorLightBox: [
-    '/images/IST2.jpg', '/images/IST3.jpg', '/images/IST4.jpg', 
-    '/images/IST7.jpg', '/images/IST10.jpg', '/images/IST11.jpg'
+    '/RENDER/VIEW/14.png', '/RENDER/VIEW/15.png', '/RENDER/VIEW/16.png',
   ],
   tableLightBox: [
-    '/images/IST7.jpg', '/images/IST10.jpg'
+    '/RENDER/VIEW/GALLERY/12.png', '/RENDER/VIEW/GALLERY/13.png', '/RENDER/VIEW/GALLERY/11.png'
   ],
   interiorLogo: [
-    '/images/14.jpg', '/images/5.jpg', '/images/7.jpg', '/images/8.jpg', 
-    '/images/9.jpg', '/images/10.jpg', '/images/11.jpg', '/images/12.jpg'
+    '/RENDER/VIEW/GALLERY/13.png', '/RENDER/VIEW/GALLERY/12.png', '/RENDER/VIEW/GALLERY/11.png', '/RENDER/VIEW/GALLERY/10.png', '/RENDER/VIEW/GALLERY/9.png', '/RENDER/VIEW/GALLERY/7.png', '/RENDER/VIEW/GALLERY/6.png', '/RENDER/VIEW/GALLERY/5.png', '/RENDER/VIEW/GALLERY/3.png', '/RENDER/VIEW/GALLERY/2.png'
   ]
 };
 
