@@ -47,7 +47,8 @@ export default function AdminDashboardPage() {
     const list = [];
     for (const [zoneId, zoneData] of Object.entries(bookingsData)) {
       if (zoneData.spots) {
-        for (const [spotId, spot] of Object.entries(zoneData.spots)) {
+        // FIXED: Added type assertion to inform TypeScript about the object structure
+        for (const [spotId, spot] of Object.entries(zoneData.spots as Record<string, any>)) {
           if (spot.status === 'Booked') {
             list.push({
               zoneId,
@@ -71,9 +72,9 @@ export default function AdminDashboardPage() {
 
     for (const [zoneId, zoneData] of Object.entries(bookingsData)) {
       if (zoneData.spots) {
-        for (const [spotId, spot] of Object.entries(zoneData.spots)) {
+        // FIXED: Added type assertion here as well
+        for (const [spotId, spot] of Object.entries(zoneData.spots as Record<string, any>)) {
           if (spot.status === 'Booked' && spot.brand) {
-            // Group by uppercase brand name to avoid duplicates (e.g., "Asus" vs "ASUS")
             const brandKey = spot.brand.toUpperCase();
 
             if (!brandStats[brandKey]) {
@@ -95,7 +96,6 @@ export default function AdminDashboardPage() {
       }
     }
 
-    // Convert object to array and sort by total spent (descending)
     return Object.values(brandStats).sort((a, b) => b.totalSpent - a.totalSpent);
   };
 
@@ -121,7 +121,7 @@ export default function AdminDashboardPage() {
       if (response.ok) {
         setStatusMsg({ type: 'success', text: result.message });
         setFormData({ ...formData, brandName: '', moreDiscount: '' });
-        setRefreshKey((prev) => prev + 1); // Refresh tables instantly
+        setRefreshKey((prev) => prev + 1);
       } else {
         setStatusMsg({ type: 'error', text: result.message || 'Failed to apply discount.' });
       }
