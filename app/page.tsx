@@ -22,23 +22,22 @@ const GALLERY_ITEMS = [
 ];
 
 const ZONE_LAYOUT_IMAGES: Record<string, string[]> = {
-  exteriorLogo: [
-    '/RENDER/VIEW/GALLERY/1.png', '/RENDER/VIEW/GALLERY/3.png'
-  ],
   interiorLightBox: [
-    '/RENDER/VIEW/14.png', '/RENDER/VIEW/15.png', '/RENDER/VIEW/16.png',
+    '/images/IST2.jpg', '/images/IST3.jpg', '/images/IST4.jpg', 
+    '/images/IST7.jpg', '/images/IST10.jpg', '/images/IST11.jpg'
   ],
   tableLightBox: [
-    '/RENDER/VIEW/GALLERY/12.png', '/RENDER/VIEW/GALLERY/13.png', '/RENDER/VIEW/GALLERY/11.png'
+    '/images/IST7.jpg', '/images/IST10.jpg'
   ],
   interiorLogo: [
-    '/RENDER/VIEW/GALLERY/13.png', '/RENDER/VIEW/GALLERY/12.png', '/RENDER/VIEW/GALLERY/11.png', '/RENDER/VIEW/GALLERY/10.png', '/RENDER/VIEW/GALLERY/9.png', '/RENDER/VIEW/GALLERY/7.png', '/RENDER/VIEW/GALLERY/6.png', '/RENDER/VIEW/GALLERY/5.png', '/RENDER/VIEW/GALLERY/3.png', '/RENDER/VIEW/GALLERY/2.png'
+    '/images/14.jpg', '/images/5.jpg', '/images/7.jpg', '/images/8.jpg', 
+    '/images/9.jpg', '/images/10.jpg', '/images/11.jpg', '/images/12.jpg'
   ]
 };
 
 export default function AdsBookingPage() {
   // --- 1. Page State Management ---
-  const [filter, setFilter] = useState<string>('exteriorLogo');
+  const [filter, setFilter] = useState<string>('interiorLightBox');
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string; } | null>(null);
   
@@ -57,7 +56,6 @@ export default function AdsBookingPage() {
   // --- Multi-Slot Selection State ---
   const [selectedSlots, setSelectedSlots] = useState<AdSlot[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
 
   // --- 2. Booking Form State ---
   const [formData, setFormData] = useState({
@@ -128,7 +126,7 @@ export default function AdsBookingPage() {
 
   // --- 5. Multi-Select & Price Calculation Helpers ---
   const toggleSlotSelection = (slot: AdSlot) => {
-    if (slot.status.toUpperCase() !== 'AVAILABLE' || isAdminMode) return;
+    if (slot.status.toUpperCase() !== 'AVAILABLE') return;
 
     setSelectedSlots((prev) => {
       const exists = prev.some((item) => item.id === slot.id);
@@ -155,8 +153,7 @@ export default function AdsBookingPage() {
 
   const { subtotal, discount, total } = calculateTotals();
 
-
-  // --- 7. Modal Handlers ---
+  // --- 6. Modal Handlers ---
   const handleOpenModal = () => {
     if (selectedSlots.length === 0) return;
     setIsModalOpen(true);
@@ -168,7 +165,7 @@ export default function AdsBookingPage() {
     setStatusMsg(null);
   };
 
-  // --- 8. Booking Submission Handler ---
+  // --- 7. Booking Submission Handler ---
   const handleSubmitBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedSlots.length === 0) return;
@@ -222,13 +219,7 @@ export default function AdsBookingPage() {
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 font-sans pb-32 selection:bg-amber-500 selection:text-neutral-950">
-      {/* --- Admin Mode Notice Banner --- */}
-      {isAdminMode && (
-        <div className="bg-amber-500 text-neutral-950 px-6 py-2 text-center font-semibold text-xs tracking-wide flex items-center justify-center gap-2 shadow-lg animate-pulse sticky top-0 z-50">
-          <span>🔐 ADMIN MODE ACTIVE — Click any status badge below to toggle between AVAILABLE and BOOKED</span>
-        </div>
-      )}
-
+      
       {/* --- Main Sticky Navigation Bar --- */}
       <nav className="border-b border-neutral-800 bg-neutral-900/80 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
@@ -259,7 +250,7 @@ export default function AdsBookingPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <a href="#sponsors" className="bg-red-500 hover:bg-red-400 text-neutral-950 font-bold px-4 py-1.5 rounded-md text-xs transition">
+            <a href="#sponsors" className="bg-red-500 hover:bg-red-400 text-neutral-950 font-bold px-6 py-2 rounded-md text-xs transition">
               Book Now &rarr;
             </a>
           </div>
@@ -334,7 +325,7 @@ export default function AdsBookingPage() {
             <div className="bg-neutral-900/60 border border-neutral-800 p-6 rounded-xl">
               <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 font-bold mb-4">CBT</div>
               <h3 className="font-bold text-base mb-2">Live Custom-Build Theater</h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">With three workstations directly inside the main customer space. Customers can watch their custom rigs being built in real timeใ</p>
+              <p className="text-xs text-neutral-400 leading-relaxed">With three workstations directly inside the main customer space. Customers can watch their custom rigs being built in real time.</p>
             </div>
           </div>
         </div>
@@ -417,7 +408,7 @@ export default function AdsBookingPage() {
           {/* --- Interactive Google Maps Embed --- */}
           <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-2 h-full min-h-[350px] shadow-lg overflow-hidden flex">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3923.7355606227507!2d100.499122!3d7.029523999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zN8KwMDEnNDYuMyJOIDEwMMKwMjknNTYuOCJF!5e1!3m2!1sen!2sth!4v1795143952164!5m2!1sen!2sth"
+              src="https://maps.google.com/maps?q=13.80975,100.65639&hl=en&z=15&output=embed" 
               width="100%" 
               height="100%" 
               style={{ border: 0, borderRadius: '0.75rem' }} 
@@ -447,9 +438,6 @@ export default function AdsBookingPage() {
 
           {/* --- Zone Tabs --- */}
           <div className="flex flex-wrap items-center gap-2 mb-8 border-b border-neutral-800 pb-4">
-            <button onClick={() => handleTabChange('exteriorLogo')} className={`px-5 py-2 rounded-t-lg text-sm font-bold transition ${filter === 'exteriorLogo' ? 'bg-red-500 text-neutral-950 border-b-4 border-red-600' : 'bg-neutral-900 text-neutral-400 hover:bg-neutral-800'}`}>
-              Exterior Logo
-            </button>
             <button onClick={() => handleTabChange('interiorLightBox')} className={`px-5 py-2 rounded-t-lg text-sm font-bold transition ${filter === 'interiorLightBox' ? 'bg-red-500 text-neutral-950 border-b-4 border-red-600' : 'bg-neutral-900 text-neutral-400 hover:bg-neutral-800'}`}>
               Interior Lightbox
             </button>
@@ -502,7 +490,7 @@ export default function AdsBookingPage() {
             </div>
           )}
 
-{/* Ad Slots Display Grid */}
+          {/* Ad Slots Display Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {slots
               .filter((slot) => slot.zone === filter)
@@ -561,6 +549,7 @@ export default function AdsBookingPage() {
               );
             })}
           </div>
+        </div>
       </section>
 
       {/* --- FOOTER --- */}
