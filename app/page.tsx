@@ -38,7 +38,7 @@ const ZONE_LAYOUT_IMAGES: Record<string, string[]> = {
 
 export default function AdsBookingPage() {
   // --- 1. Page State Management ---
-  const [filter, setFilter] = useState<string>('interiorLightBox');
+  const [filter, setFilter] = useState<string>('exteriorLogo');
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string; } | null>(null);
   
@@ -439,6 +439,9 @@ export default function AdsBookingPage() {
 
           {/* --- Zone Tabs --- */}
           <div className="flex flex-wrap items-center gap-2 mb-8 border-b border-neutral-800 pb-4">
+            <button onClick={() => handleTabChange('exteriorLogo')} className={`px-5 py-2 rounded-t-lg text-sm font-bold transition ${filter === 'exteriorLogo' ? 'bg-red-500 text-neutral-950 border-b-4 border-red-600' : 'bg-neutral-900 text-neutral-400 hover:bg-neutral-800'}`}>
+              Exterior Logo
+            </button>
             <button onClick={() => handleTabChange('interiorLightBox')} className={`px-5 py-2 rounded-t-lg text-sm font-bold transition ${filter === 'interiorLightBox' ? 'bg-red-500 text-neutral-950 border-b-4 border-red-600' : 'bg-neutral-900 text-neutral-400 hover:bg-neutral-800'}`}>
               Interior Lightbox
             </button>
