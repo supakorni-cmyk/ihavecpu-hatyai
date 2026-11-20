@@ -58,9 +58,6 @@ export default function AdsBookingPage() {
   const [selectedSlots, setSelectedSlots] = useState<AdSlot[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // --- Admin Mode Toggle State ---
-  const [isAdminMode, setIsAdminMode] = useState(false);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   // --- 2. Booking Form State ---
   const [formData, setFormData] = useState({
@@ -158,40 +155,6 @@ export default function AdsBookingPage() {
 
   const { subtotal, discount, total } = calculateTotals();
 
-  // --- 6. Admin Toggle Handler ---
-  const handleAdminToggleStatus = async (slot: AdSlot) => {
-    if (!isAdminMode || togglingId) return;
-
-    setTogglingId(slot.id);
-    setStatusMsg(null);
-
-    try {
-      const res = await fetch('/api/spots/toggle', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          zoneId: slot.zone,
-          spotId: slot.id,
-          name: slot.title,
-          price: slot.priceTHB,
-        }),
-      });
-
-      const result = await res.json();
-
-      if (res.ok && result.success) {
-        setSelectedSlots((prev) => prev.filter((s) => s.id !== slot.id));
-        triggerRefresh(); 
-      } else {
-        setStatusMsg({ type: 'error', text: result.message || 'Failed to toggle spot status.' });
-      }
-    } catch (err) {
-      console.error('Admin toggle error:', err);
-      setStatusMsg({ type: 'error', text: 'Network error while toggling spot status.' });
-    } finally {
-      setTogglingId(null);
-    }
-  };
 
   // --- 7. Modal Handlers ---
   const handleOpenModal = () => {
@@ -296,19 +259,6 @@ export default function AdsBookingPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                setIsAdminMode(!isAdminMode);
-                setSelectedSlots([]);
-              }}
-              className={`px-3 py-1.5 rounded-md text-xs font-mono font-bold border transition ${
-                isAdminMode
-                  ? 'bg-rose-500/20 text-rose-400 border-rose-500/50'
-                  : 'bg-neutral-900 text-neutral-400 border-neutral-800 hover:text-white'
-              }`}
-            >
-              {isAdminMode ? '🔐 Exit Admin' : '🔐 Admin'}
-            </button>
             <a href="#sponsors" className="bg-red-500 hover:bg-red-400 text-neutral-950 font-bold px-4 py-1.5 rounded-md text-xs transition">
               Book Now &rarr;
             </a>
@@ -552,12 +502,11 @@ export default function AdsBookingPage() {
             </div>
           )}
 
-          {/* Ad Slots Display Grid */}
+{/* Ad Slots Display Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {slots
               .filter((slot) => slot.zone === filter)
               .map((slot) => {
-              const isToggling = togglingId === slot.id;
               const isSelected = selectedSlots.some((s) => s.id === slot.id);
               const isAvailable = slot.status.toUpperCase() === 'AVAILABLE';
 
@@ -565,33 +514,24 @@ export default function AdsBookingPage() {
                 <div
                   key={slot.id}
                   onClick={() => {
-                    if (isAvailable && !isAdminMode) {
+                    if (isAvailable) {
                       toggleSlotSelection(slot);
                     }
                   }}
                   className={`bg-neutral-900 border rounded-xl p-5 flex flex-col justify-between transition ${
-                    isSelected ? 'border-red-500 ring-2 ring-red-500/30 bg-neutral-900/90' : isAdminMode ? 'border-red-500/40 hover:border-red-500' : 'border-neutral-800 hover:border-neutral-700'
-                  } ${isAvailable && !isAdminMode ? 'cursor-pointer' : ''}`}
+                    isSelected ? 'border-red-500 ring-2 ring-red-500/30 bg-neutral-900/90' : 'border-neutral-800 hover:border-neutral-700'
+                  } ${isAvailable ? 'cursor-pointer' : ''}`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <span className="font-mono text-xs font-bold text-red-500 bg-red-500/10 px-2 py-1 rounded">
                         {slot.code}
                       </span>
-                      <button
-                        type="button"
-                        disabled={!isAdminMode || isToggling}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAdminToggleStatus(slot);
-                        }}
-                        className={`text-xs font-semibold px-2 py-1 rounded transition ${
+                      <span className={`text-xs font-semibold px-2 py-1 rounded ${
                           isAvailable ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                        } ${isAdminMode ? 'cursor-pointer hover:scale-105 ring-1 ring-red-500/50' : 'cursor-default'}`}
-                      >
-                        {isToggling ? 'Updating...' : slot.status.toUpperCase()}
-                        {isAdminMode && ' 🔄'}
-                      </button>
+                        }`}>
+                        {slot.status.toUpperCase()}
+                      </span>
                     </div>
                     <h3 className="text-base font-bold mb-1">{slot.title}</h3>
                     <p className="text-xs text-neutral-400 uppercase tracking-wider mb-3">
@@ -605,23 +545,22 @@ export default function AdsBookingPage() {
                     </span>
                     <button
                       type="button"
-                      disabled={!isAvailable || isAdminMode}
+                      disabled={!isAvailable}
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleSlotSelection(slot);
                       }}
                       className={`px-3 py-1.5 rounded-lg font-medium text-xs transition ${
-                        isSelected ? 'bg-red-500 text-neutral-950 font-bold' : isAvailable && !isAdminMode ? 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200' : 'bg-neutral-950 text-neutral-600 cursor-not-allowed border border-neutral-800'
+                        isSelected ? 'bg-red-500 text-neutral-950 font-bold' : isAvailable ? 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200' : 'bg-neutral-950 text-neutral-600 cursor-not-allowed border border-neutral-800'
                       }`}
                     >
-                      {isAdminMode ? 'Admin Mode' : isSelected ? '✓ Selected' : isAvailable ? '+ Add' : 'Booked'}
+                      {isSelected ? '✓ Selected' : isAvailable ? '+ Add' : 'Booked'}
                     </button>
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
       </section>
 
       {/* --- FOOTER --- */}
@@ -638,7 +577,7 @@ export default function AdsBookingPage() {
       </footer>
 
       {/* --- Floating Bottom Selection Bar --- */}
-      {selectedSlots.length > 0 && !isAdminMode && (
+      {selectedSlots.length > 0 && (
         <div className="fixed bottom-0 inset-x-0 bg-neutral-900/95 border-t border-neutral-800 backdrop-blur-md p-4 z-40 shadow-2xl">
           <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
