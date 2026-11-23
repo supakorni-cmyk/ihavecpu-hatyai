@@ -250,7 +250,7 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {/* --- VIEW 2: BOOKED SPOTS LIST --- */}
+{/* --- VIEW 2: BOOKED SPOTS LIST --- */}
         {activeTab === 'BOOKINGS' && (
           <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden shadow-2xl">
             <div className="p-6 border-b border-neutral-800 flex justify-between items-center">
@@ -268,11 +268,12 @@ export default function AdminDashboardPage() {
                   <thead>
                     <tr className="bg-neutral-950 text-xs uppercase tracking-wider text-neutral-500">
                       <th className="p-4 border-b border-neutral-800">Spot Code</th>
+                      {/* NEW: Spot Title Header */}
+                      <th className="p-4 border-b border-neutral-800">Spot Title</th>
                       <th className="p-4 border-b border-neutral-800">Zone</th>
                       <th className="p-4 border-b border-neutral-800">Brand</th>
                       <th className="p-4 border-b border-neutral-800">Booked By (Email)</th>
                       <th className="p-4 border-b border-neutral-800 text-right">Net Price</th>
-                      {/* NEW: Actions Column Header */}
                       <th className="p-4 border-b border-neutral-800 text-center">Actions</th>
                     </tr>
                   </thead>
@@ -280,6 +281,8 @@ export default function AdminDashboardPage() {
                     {bookedSpots.map((spot, i) => (
                       <tr key={i} className="hover:bg-neutral-800/50 transition border-b border-neutral-800/50 last:border-0">
                         <td className="p-4 font-mono text-amber-500 font-bold">{spot.spotId}</td>
+                        {/* NEW: Spot Title Cell */}
+                        <td className="p-4 text-sm font-medium text-neutral-200">{spot.name}</td>
                         <td className="p-4 text-xs text-neutral-300">{spot.zoneId}</td>
                         <td className="p-4 font-bold text-white">{spot.brand}</td>
                         <td className="p-4 text-xs text-neutral-400">{spot.bookedBy}</td>
@@ -293,7 +296,6 @@ export default function AdminDashboardPage() {
                             </div>
                           )}
                         </td>
-                        {/* NEW: Actions Column with Remove Button */}
                         <td className="p-4 text-center">
                           <button
                             onClick={() => handleRemoveBooking(spot.zoneId, spot.spotId, spot.brand)}
