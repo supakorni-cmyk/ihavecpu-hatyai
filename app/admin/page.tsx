@@ -14,7 +14,7 @@ interface BrandStat {
 
 export default function AdminDashboardPage() {
   // --- UI State ---
-  const [activeTab, setActiveTab] = useState<'DISCOUNT' | 'BOOKINGS' | 'RANKINGS'>('RANKINGS');
+  const [activeTab, setActiveTab] = useState<'RANKINGS' | 'BOOKINGS' | 'DISCOUNT'>('BOOKINGS');
   
   // --- Form State ---
   const [formData, setFormData] = useState({ adminPass: '', brandName: '', moreDiscount: '' });
@@ -47,7 +47,6 @@ export default function AdminDashboardPage() {
     const list = [];
     for (const [zoneId, zoneData] of Object.entries(bookingsData)) {
       if (zoneData.spots) {
-        // FIXED: Added type assertion to inform TypeScript about the object structure
         for (const [spotId, spot] of Object.entries(zoneData.spots as Record<string, any>)) {
           if (spot.status === 'Booked') {
             list.push({
@@ -72,7 +71,6 @@ export default function AdminDashboardPage() {
 
     for (const [zoneId, zoneData] of Object.entries(bookingsData)) {
       if (zoneData.spots) {
-        // FIXED: Added type assertion here as well
         for (const [spotId, spot] of Object.entries(zoneData.spots as Record<string, any>)) {
           if (spot.status === 'Booked' && spot.brand) {
             const brandKey = spot.brand.toUpperCase();
@@ -132,6 +130,38 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // --- NEW: Handle Removing a Booking ---
+  const handleRemoveBooking = async (zoneId: string, spotId: string, brandName: string) => {
+    // 1. Ask for confirmation before deleting
+    const isConfirmed = window.confirm(`Are you sure you want to remove the booking for ${spotId} (${brandName})? This will make the spot available again.`);
+    if (!isConfirmed) return;
+
+    try {
+      // 2. Call the toggle endpoint. Because it is currently booked, this endpoint will delete the record.
+      const response = await fetch('/api/spots/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          zoneId,
+          spotId,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // 3. Refresh the tables instantly to reflect the removal
+        setRefreshKey((prev) => prev + 1);
+        alert(`Successfully removed booking for ${spotId}.`);
+      } else {
+        alert(result.message || 'Failed to remove booking.');
+      }
+    } catch (err) {
+      console.error('Remove error:', err);
+      alert('Network error while removing booking.');
+    }
+  };
+
   const bookedSpots = getBookedSpotsList();
   const rankedBrands = getBrandRankings();
 
@@ -139,7 +169,7 @@ export default function AdminDashboardPage() {
     <main className="min-h-screen bg-neutral-950 text-neutral-100 font-sans flex flex-col items-center pt-16 px-6 pb-20">
       
       {/* Header */}
-      <div className="w-full max-w-4xl mb-8">
+      <div className="w-full max-w-5xl mb-8">
         <Link href="/" className="text-sm text-neutral-400 hover:text-white transition inline-block mb-4">
           &larr; Back to Main Site
         </Link>
@@ -152,7 +182,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Tabs */}
-      <div className="w-full max-w-4xl flex border-b border-neutral-800 mb-6">
+      <div className="w-full max-w-5xl flex border-b border-neutral-800 mb-6">
         <button
           onClick={() => setActiveTab('RANKINGS')}
           className={`px-6 py-3 text-sm font-bold transition ${activeTab === 'RANKINGS' ? 'text-red-500 border-b-2 border-red-500 bg-red-500/10' : 'text-neutral-400 hover:bg-neutral-900'}`}
@@ -173,7 +203,7 @@ export default function AdminDashboardPage() {
         </button>
       </div>
 
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-5xl">
         
         {/* --- VIEW 1: BRAND RANKINGS --- */}
         {activeTab === 'RANKINGS' && (
@@ -242,6 +272,8 @@ export default function AdminDashboardPage() {
                       <th className="p-4 border-b border-neutral-800">Brand</th>
                       <th className="p-4 border-b border-neutral-800">Booked By (Email)</th>
                       <th className="p-4 border-b border-neutral-800 text-right">Net Price</th>
+                      {/* NEW: Actions Column Header */}
+                      <th className="p-4 border-b border-neutral-800 text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -260,6 +292,15 @@ export default function AdminDashboardPage() {
                               (-{spot.manualDiscount.toLocaleString()} THB Discount)
                             </div>
                           )}
+                        </td>
+                        {/* NEW: Actions Column with Remove Button */}
+                        <td className="p-4 text-center">
+                          <button
+                            onClick={() => handleRemoveBooking(spot.zoneId, spot.spotId, spot.brand)}
+                            className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 font-semibold px-3 py-1.5 rounded text-xs border border-rose-500/30 transition"
+                          >
+                            Remove
+                          </button>
                         </td>
                       </tr>
                     ))}
